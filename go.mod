@@ -1,4 +1,4 @@
-module github.com/uber/athenadriver
+module github.com/prequel-co/athenadriver
 
 go 1.21
 
@@ -13,7 +13,6 @@ require (
 	github.com/aws/smithy-go v1.22.1
 	github.com/cactus/go-statsd-client/statsd v0.0.0-20200423205355-cb0885a1018c
 	github.com/jedib0t/go-pretty/v6 v6.2.7
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/uber-go/tally v3.3.17+incompatible
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
@@ -22,9 +21,13 @@ require (
 	go.uber.org/zap v1.15.0
 )
 
-require github.com/shogo82148/memoize v0.1.0
+require (
+	github.com/shogo82148/memoize v0.1.0
+	github.com/uber/athenadriver v1.1.15
+)
 
 require (
+	github.com/aws/aws-sdk-go v1.37.32 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.22 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.26 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.26 // indirect
@@ -35,6 +38,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.28.7 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.33.4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
