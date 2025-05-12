@@ -26,7 +26,7 @@ import (
 
 	secret "github.com/uber/athenadriver/examples/constants"
 
-	drv "github.com/uber/athenadriver/go"
+	drv "github.com/prequel-co/athenadriver/go"
 )
 
 // https://aws.amazon.com/about-aws/whats-new/2019/09/amazon-athena-adds-support-inserting-data-into-table-results-of-select-query/

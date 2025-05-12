@@ -30,7 +30,7 @@ import (
 	"time"
 
 	secret "github.com/uber/athenadriver/examples/constants"
-	drv "github.com/uber/athenadriver/go"
+	drv "github.com/prequel-co/athenadriver/go"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

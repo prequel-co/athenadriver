@@ -28,7 +28,7 @@ import (
 
 	secret "github.com/uber/athenadriver/examples/constants"
 
-	drv "github.com/uber/athenadriver/go"
+	drv "github.com/prequel-co/athenadriver/go"
 )
 
 func main() {

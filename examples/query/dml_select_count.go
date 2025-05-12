@@ -26,7 +26,7 @@ import (
 
 	secret "github.com/uber/athenadriver/examples/constants"
 
-	drv "github.com/uber/athenadriver/go"
+	drv "github.com/prequel-co/athenadriver/go"
 )
 
 // main will query Athena and print all columns and rows information in csv format

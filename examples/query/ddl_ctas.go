@@ -27,7 +27,7 @@ import (
 	secret "github.com/uber/athenadriver/examples/constants"
 	"go.uber.org/zap"
 
-	drv "github.com/uber/athenadriver/go"
+	drv "github.com/prequel-co/athenadriver/go"
 )
 
 func main() {
