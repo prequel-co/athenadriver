@@ -22,6 +22,8 @@ require (
 	go.uber.org/zap v1.15.0
 )
 
+require github.com/shogo82148/memoize v0.1.0
+
 require (
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.22 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.26 // indirect

@@ -25,6 +25,13 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/athena"
 	athenatypes "github.com/aws/aws-sdk-go-v2/service/athena/types"
+
+	"github.com/shogo82148/memoize"
+)
+
+var (
+    // memoizer for GetWorkGroup results: key is workgroup name, value is *athenatypes.WorkGroup
+    getWGGroup memoize.Group[string, *athenatypes.WorkGroup]
 )
 
 // Workgroup is a wrapper of Athena Workgroup.
@@ -60,19 +67,33 @@ func NewWG(name string, config *athenatypes.WorkGroupConfiguration, tags *WGTags
 	}
 }
 
-// getWG is to get Athena Workgroup from AWS remotely.
-func getWG(ctx context.Context, client AthenaClient, Name string) (*athenatypes.WorkGroup, error) {
-	if client == nil {
-		return nil, ErrAthenaNilClient
-	}
-	getWorkGroupOutput, err := client.GetWorkGroup(ctx,
-		&athena.GetWorkGroupInput{
-			WorkGroup: aws.String(Name),
-		})
-	if err != nil {
-		return nil, err
-	}
-	return getWorkGroupOutput.WorkGroup, nil
+// getWG retrieves an Athena WorkGroup from AWS remotely, caching the result for 10 minutes.
+// Subsequent calls with the same name within the TTL return the cached *WorkGroup.
+func getWG(ctx context.Context, client AthenaClient, name string) (*athenatypes.WorkGroup, error) {
+    if client == nil {
+        return nil, ErrAthenaNilClient
+    }
+
+    // Define the actual fetch logic: invoked on cache-miss or expired entry.
+    fetch := func(ctx context.Context, key string) (wg *athenatypes.WorkGroup, expiresAt time.Time, err error) {
+        out, err := client.GetWorkGroup(ctx, &athena.GetWorkGroupInput{
+            WorkGroup: aws.String(key),
+        })
+        if err != nil {
+            return nil, time.Time{}, err
+        }
+
+        wg = out.WorkGroup
+        // Cache this result for 10 minutes.
+        expiresAt = time.Now().Add(10 * time.Minute)
+        return wg, expiresAt, nil
+    }
+
+    wg, _, err := getWGGroup.Do(ctx, name, fetch)
+    if err != nil {
+        return nil, err
+    }
+    return wg, nil
 }
 
 // CreateWGRemotely is to create a Workgroup remotely.
