@@ -53,6 +53,10 @@ type Connection struct {
 
 // buildExecutionParams converts Go data types into strings for query arguments in parameterized queries.
 func (c *Connection) buildExecutionParams(args []driver.Value) ([]string, error) {
+	if len(args) == 0 {
+		return nil, nil
+	}
+
 	executionParams := []string{}
 	for _, arg := range args {
 		if arg == nil {
