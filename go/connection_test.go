@@ -334,7 +334,7 @@ func TestBuildExecutionParams(t *testing.T) {
 			name:        "No arguments",
 			inputArgs:   []driver.Value{},
 			expectedErr: nil,
-			expected:    []string{},
+			expected:    nil,
 		},
 		{
 			name:        "Bool",
@@ -667,10 +667,16 @@ func TestConnection_QueryContext7(t *testing.T) {
 	assert.Equal(t, err, ErrInvalidQuery)
 	assert.Nil(t, driverRows)
 
-	// Cancelled by AWS Athena
+	// Cancelled by AWS Athena (no StateChangeReason -> fallback)
 	query = "SELECTQueryContext_AWS_CANCEL"
 	driverRows, err = c.QueryContext(context.Background(), query, []driver.NamedValue{})
-	assert.NotNil(t, err)
+	assert.EqualError(t, err, "Query cancelled")
+	assert.Nil(t, driverRows)
+
+	// Cancelled by AWS Athena with StateChangeReason preserved
+	query = "SELECTQueryContext_AWS_CANCEL_WITH_REASON"
+	driverRows, err = c.QueryContext(context.Background(), query, []driver.NamedValue{})
+	assert.EqualError(t, err, "Query exhausted data scan limit")
 	assert.Nil(t, driverRows)
 
 	// failed by AWS Athena

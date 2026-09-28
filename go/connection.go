@@ -455,17 +455,25 @@ WAITING_FOR_RESULT:
 		//statementType = statusResp.QueryExecution.StatementType
 		switch statusResp.QueryExecution.Status.State {
 		case athenatypes.QueryExecutionStateCancelled:
+			reason := "Query cancelled"
+			if statusResp.QueryExecution.Status.StateChangeReason != nil && *statusResp.QueryExecution.Status.StateChangeReason != "" {
+				reason = *statusResp.QueryExecution.Status.StateChangeReason
+			}
 			timeCanceled := time.Since(now)
 			obs.Log(ErrorLevel, "QueryExecutionStateCancelled",
 				zap.String("workgroup", wg.Name),
-				zap.String("queryID", queryID))
+				zap.String("queryID", queryID),
+				zap.String("reason", reason))
 			obs.Scope().Timer(DriverName + ".query.canceled").Record(timeCanceled)
 			if c.connector.config.IsMoneyWise() {
 				printCost(statusResp)
 			}
-			return nil, context.Canceled
+			return nil, errors.New(reason)
 		case athenatypes.QueryExecutionStateFailed:
-			reason := *statusResp.QueryExecution.Status.StateChangeReason
+			reason := "Query failed"
+			if statusResp.QueryExecution.Status.StateChangeReason != nil && *statusResp.QueryExecution.Status.StateChangeReason != "" {
+				reason = *statusResp.QueryExecution.Status.StateChangeReason
+			}
 			timeQueryExecutionStateFailed := time.Since(now)
 			obs.Log(ErrorLevel, "QueryExecutionStateFailed",
 				zap.String("workgroup", wg.Name),

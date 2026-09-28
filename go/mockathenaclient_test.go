@@ -141,6 +141,12 @@ func (m *mockAthenaClient) StartQueryExecution(_ context.Context, s *athena.Star
 			QueryExecutionId: &qid,
 		}, nil
 	}
+	if *s.QueryString == "SELECTQueryContext_AWS_CANCEL_WITH_REASON" {
+		qid := "SELECTQueryContext_AWS_CANCEL_WITH_REASON_QID"
+		return &athena.StartQueryExecutionOutput{
+			QueryExecutionId: &qid,
+		}, nil
+	}
 	if *s.QueryString == "SELECTQueryContext_AWS_FAIL" { // Ping
 		qid := "SELECTQueryContext_AWS_FAIL_QID"
 		return &athena.StartQueryExecutionOutput{
@@ -279,6 +285,25 @@ func (m *mockAthenaClient) GetQueryExecution(_ context.Context, input *athena.Ge
 				QueryExecutionId: &ping,
 				Status: &athenatypes.QueryExecutionStatus{
 					State: stat,
+				},
+				Statistics: &athenatypes.QueryExecutionStatistics{
+					DataScannedInBytes: &dataScanned,
+				},
+			},
+		}, nil
+	}
+	if *input.QueryExecutionId == "SELECTQueryContext_AWS_CANCEL_WITH_REASON_QID" {
+		ping := "SELECTQueryContext_AWS_CANCEL_WITH_REASON_QID"
+		var dataScanned = int64(123)
+		stat := athenatypes.QueryExecutionStateCancelled
+		reason := "Query exhausted data scan limit"
+		return &athena.GetQueryExecutionOutput{
+			QueryExecution: &athenatypes.QueryExecution{
+				Query:            &ping,
+				QueryExecutionId: &ping,
+				Status: &athenatypes.QueryExecutionStatus{
+					State:             stat,
+					StateChangeReason: &reason,
 				},
 				Statistics: &athenatypes.QueryExecutionStatistics{
 					DataScannedInBytes: &dataScanned,
