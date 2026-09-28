@@ -543,7 +543,7 @@ func TestConnection_QueryContext5(t *testing.T) {
 	wgTags := NewWGTags()
 	wgTags.AddTag("Uber User", "henry.wu")
 	wgTags.AddTag("Uber Asset", "abc.efg")
-	wg := NewDefaultWG("henry_wu", nil, wgTags)
+	wg := NewDefaultWG("henry_wu_disabled", nil, wgTags)
 	testConf := NewNoOpsConfig()
 	_ = testConf.SetOutputBucket(s3bucket)
 	_ = testConf.SetRegion("us-east-1")

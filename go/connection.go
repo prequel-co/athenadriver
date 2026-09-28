@@ -345,6 +345,10 @@ func (c *Connection) QueryContext(ctx context.Context, query string, namedArgs [
 		if err != nil {
 			obs.Scope().Counter(DriverName + ".failure.querycontext.getwg").Inc(1)
 			obs.Log(WarnLevel, "Didn't find workgroup "+wg.Name+" due to: "+err.Error())
+			var re *awshttp.ResponseError
+			if errors.As(err, &re) && !strings.Contains(err.Error(), "WorkGroup is not found.") {
+				return nil, err
+			}
 			if c.connector.config.IsWGRemoteCreationAllowed() {
 				err = wg.CreateWGRemotely(ctx, c.athenaClient)
 				if err != nil {
@@ -355,7 +359,7 @@ func (c *Connection) QueryContext(ctx context.Context, query string, namedArgs [
 			} else {
 				obs.Log(WarnLevel, "workgroup "+DefaultWGName+" is used for "+wg.Name+".")
 				return nil,
-					fmt.Errorf("workgroup %q doesn't exist and workgroup remote creation is disabled", wg.Name)
+					fmt.Errorf("workgroup %q doesn't exist and workgroup remote creation is disabled, due to: %v", wg.Name, err.Error())
 			}
 		} else {
 			if athenaWG.State != athenatypes.WorkGroupStateEnabled {
